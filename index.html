@@ -422,7 +422,9 @@
 
   const API_URL = "https://graphql.anilist.co";
   const CLIENT_ID = "50350";
-  const REDIRECT_URI = "https://orelashush123.github.io/anilist-app/";
+  // Redirect target is whatever's registered in this client's AniList app
+  // settings (https://anilist.co/settings/developer) — AniList's implicit
+  // grant doesn't take an explicit redirect_uri query param.
   const LS_TOKEN = "rewatch_token";
   const LS_EXPIRES = "rewatch_token_expires";
 
@@ -500,7 +502,6 @@
   btnOpenAuth.addEventListener("click", function(){
     const url = "https://anilist.co/api/v2/oauth/authorize"
       + "?client_id=" + CLIENT_ID
-      + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
       + "&response_type=token";
     window.location.href = url; // full-page redirect, comes straight back here
   });
