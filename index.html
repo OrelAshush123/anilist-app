@@ -1,1 +1,810 @@
-<html>hello world</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rewatch — AniList Rating Review</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #15131f;
+    --bg-soft: #1c1928;
+    --surface: #221e33;
+    --surface-raised: #2a2440;
+    --line: #362f4d;
+    --ink: #eee9f7;
+    --ink-dim: #a79fc0;
+    --ink-faint: #6e6786;
+    --gold: #f2b134;
+    --gold-dim: #a4812b;
+    --teal: #4fd1c5;
+    --coral: #ff6b7d;
+    --radius: 14px;
+    --radius-sm: 8px;
+    font-size: 16px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0; padding:0;
+    background: radial-gradient(120% 140% at 20% -10%, #251f3a 0%, var(--bg) 55%);
+    color: var(--ink);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px 16px 60px;
+  }
+
+  h1,h2,h3{ font-family: 'Fraunces', serif; font-weight: 600; margin:0; }
+
+  a { color: var(--gold); }
+
+  .app{ width:100%; max-width: 560px; }
+
+  /* --- top brand mark --- */
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    justify-content:center;
+    margin-bottom: 28px;
+    color: var(--ink-dim);
+    letter-spacing: 0.02em;
+  }
+  .brand .mark{
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:#1a1626; font-size: 14px;
+  }
+  .brand span{ font-size: 14px; }
+
+  /* --- card --- */
+  .card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+
+  .card p.lead{
+    color: var(--ink-dim);
+    line-height: 1.55;
+    margin: 10px 0 0;
+    font-size: 15px;
+  }
+
+  h2.title{ font-size: 26px; letter-spacing: -0.01em; }
+
+  /* --- form controls --- */
+  label{
+    display:block;
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin: 22px 0 8px;
+  }
+
+  input[type=text], input[type=password]{
+    width:100%;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  input[type=text]:focus, input[type=password]:focus{
+    border-color: var(--gold-dim);
+  }
+
+  .hint{ font-size: 12.5px; color: var(--ink-faint); margin-top: 6px; line-height:1.5; }
+
+  button{
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    padding: 13px 22px;
+    transition: transform .1s ease, filter .15s ease, opacity .15s ease;
+  }
+  button:active{ transform: scale(0.98); }
+  button:disabled{ opacity:.5; cursor:not-allowed; }
+
+  .btn-primary{
+    background: linear-gradient(135deg, var(--gold), #e08f2e);
+    color: #1a1626;
+    width: 100%;
+  }
+  .btn-primary:hover:not(:disabled){ filter: brightness(1.08); }
+
+  .btn-secondary{
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .btn-secondary:hover:not(:disabled){ border-color: var(--ink-faint); }
+
+  .btn-text{
+    background:none; border:none; color: var(--ink-dim);
+    text-decoration: underline; padding: 6px 0; font-weight: 500; font-size: 13.5px;
+  }
+
+  .row{ display:flex; gap:10px; margin-top: 22px; }
+  .row button{ flex:1; }
+
+  .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; border-radius:50%;
+    background: var(--surface-raised); color: var(--ink-dim);
+    font-size: 12px; font-weight:600; margin-right:8px; flex-shrink:0;
+  }
+  .step{ display:flex; align-items:flex-start; gap:0; margin: 14px 0; color: var(--ink-dim); font-size: 14px; line-height:1.6;}
+
+  .banner{
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin-top: 18px;
+    display:none;
+  }
+  .banner.error{ background: rgba(255,107,125,0.12); border:1px solid rgba(255,107,125,0.35); color: #ffb3bd; display:block; }
+  .banner.success{ background: rgba(79,209,197,0.12); border:1px solid rgba(79,209,197,0.35); color: var(--teal); display:block; }
+  .banner.info{ background: rgba(242,177,52,0.1); border:1px solid rgba(242,177,52,0.3); color: var(--gold); display:block; }
+
+  /* --- progress --- */
+  .progress-wrap{
+    display:flex; align-items:center; gap:12px;
+    margin-bottom: 18px;
+    color: var(--ink-dim);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .progress-bar{
+    flex:1; height:6px; border-radius:4px;
+    background: var(--bg-soft);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--gold), var(--coral));
+    border-radius:4px;
+    transition: width .35s ease;
+  }
+
+  /* --- review card --- */
+  .review-card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow:hidden;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+
+  .cover-wrap{
+    width:100%;
+    aspect-ratio: 16/9;
+    background: var(--bg-soft);
+    position:relative;
+    overflow:hidden;
+  }
+  .cover-wrap img{
+    width:100%; height:100%; object-fit:cover;
+    display:block;
+    filter: saturate(1.05);
+  }
+  .cover-wrap .no-cover{
+    width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--ink-faint);
+    font-family:'Fraunces',serif; font-size: 15px;
+  }
+  .cover-fade{
+    position:absolute; inset:0;
+    background: linear-gradient(to top, var(--surface) 0%, rgba(34,30,51,0) 55%);
+  }
+
+  .review-body{ padding: 26px 28px 30px; }
+
+  .anime-title{
+    font-size: 24px;
+    line-height:1.25;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .anime-sub{
+    color: var(--ink-faint);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .rating-row{
+    display:flex; align-items:flex-end; gap: 18px;
+    margin-top: 6px;
+  }
+  .current-score{
+    flex-shrink:0;
+  }
+  .current-score .num{
+    font-family:'Fraunces',serif;
+    font-size: 34px;
+    font-weight:600;
+    color: var(--ink-dim);
+    line-height:1;
+  }
+  .current-score .lbl{
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top:4px;
+  }
+
+  .new-score-field{ flex:1; }
+  .new-score-field label{ margin: 0 0 8px; }
+  .new-score-field input{
+    font-family:'Fraunces',serif;
+    font-size: 22px;
+    font-weight: 600;
+    padding: 10px 14px;
+    color: var(--gold);
+  }
+  .new-score-field input.invalid{ border-color: var(--coral); }
+  .new-score-field input.success{ border-color: var(--teal); }
+
+  .field-msg{ font-size: 12.5px; margin-top:7px; min-height: 16px; color: var(--ink-faint); }
+  .field-msg.error{ color: var(--coral); }
+  .field-msg.success{ color: var(--teal); }
+
+  .review-actions{
+    display:flex; gap:10px; margin-top: 24px;
+  }
+  .review-actions button{ flex:1; }
+
+  .skip-line{
+    text-align:center; margin-top:16px;
+  }
+
+  footer.helper{
+    text-align:center;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    margin-top: 22px;
+  }
+
+  .spinner{
+    width:16px; height:16px;
+    border-radius:50%;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-top-color: currentColor;
+    display:inline-block;
+    animation: spin .7s linear infinite;
+    vertical-align: -3px;
+    margin-right:8px;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .center-icon{
+    width:52px; height:52px;
+    border-radius:14px;
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+    display:flex; align-items:center; justify-content:center;
+    margin: 0 auto 18px;
+    font-family:'Fraunces',serif; font-weight:700; font-size:24px; color:#1a1626;
+  }
+
+  .screen{ animation: fadein .25s ease; }
+  @keyframes fadein{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+  .hidden{ display:none !important; }
+
+  @media (min-width: 520px){
+    .cover-wrap{ aspect-ratio: 16/7; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="brand"><span class="mark">灯</span><span>Rewatch · AniList Rating Review</span></div>
+
+  <!-- ===================== LOGIN SCREEN ===================== -->
+  <div id="screen-login" class="screen">
+    <div class="card">
+      <h2 class="title">Log in with AniList</h2>
+      <p class="lead">Review and update your anime scores, one entry at a time. Your password never touches this app — AniList issues an access token directly to you.</p>
+
+      <div class="row" style="margin-top:22px;">
+        <button class="btn-primary" id="btn-open-auth">Log in with AniList →</button>
+      </div>
+      <div class="hint">You'll be sent to AniList to approve access, then brought straight back here — no codes to copy.</div>
+
+      <div id="login-banner" class="banner"></div>
+    </div>
+  </div>
+
+  <!-- ===================== CONFIRM SCREEN ===================== -->
+  <div id="screen-confirm" class="screen hidden">
+    <div class="card" style="text-align:center;">
+      <div class="center-icon">✓</div>
+      <h2 class="title">Login successful!</h2>
+      <p class="lead">You're ready to update your anime ratings<span id="confirm-name"></span>.</p>
+      <div class="row">
+        <button class="btn-primary" id="btn-start">Start updating</button>
+      </div>
+      <button class="btn-text" id="btn-logout" style="margin-top:14px;">Log out</button>
+    </div>
+  </div>
+
+  <!-- ===================== LOADING SCREEN ===================== -->
+  <div id="screen-loading" class="screen hidden">
+    <div class="card" style="text-align:center;">
+      <div class="spinner" style="width:22px;height:22px;color:var(--gold);"></div>
+      <p class="lead" id="loading-text">Fetching your anime list…</p>
+    </div>
+  </div>
+
+  <!-- ===================== EMPTY SCREEN ===================== -->
+  <div id="screen-empty" class="screen hidden">
+    <div class="card" style="text-align:center;">
+      <h2 class="title">No rated anime found</h2>
+      <p class="lead">Your AniList account doesn't have any anime with a score yet. Rate a few titles on AniList, then come back.</p>
+      <div class="row"><button class="btn-secondary" id="btn-empty-back">Back</button></div>
+    </div>
+  </div>
+
+  <!-- ===================== REVIEW SCREEN ===================== -->
+  <div id="screen-review" class="screen hidden">
+    <div class="progress-wrap">
+      <span id="progress-label">1 of 1</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="review-card">
+      <div class="cover-wrap">
+        <img id="cover-img" src="" alt="" class="hidden" />
+        <div class="no-cover hidden" id="no-cover">No cover available</div>
+        <div class="cover-fade"></div>
+      </div>
+      <div class="review-body">
+        <h3 class="anime-title" id="anime-title">—</h3>
+        <div class="anime-sub" id="anime-sub"></div>
+
+        <div class="rating-row">
+          <div class="current-score">
+            <div class="num" id="current-score-num">–</div>
+            <div class="lbl">Current</div>
+          </div>
+          <div class="new-score-field">
+            <label for="input-new-score">New rating</label>
+            <input type="text" id="input-new-score" inputmode="decimal" autocomplete="off" />
+            <div class="field-msg" id="field-msg"></div>
+          </div>
+        </div>
+
+        <div class="review-actions">
+          <button class="btn-secondary" id="btn-skip">Skip</button>
+          <button class="btn-primary" id="btn-save">Save &amp; next ↵</button>
+        </div>
+        <div class="skip-line"><button class="btn-text" id="btn-quit">Stop reviewing</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== DONE SCREEN ===================== -->
+  <div id="screen-done" class="screen hidden">
+    <div class="card" style="text-align:center;">
+      <div class="center-icon">★</div>
+      <h2 class="title">All caught up!</h2>
+      <p class="lead" id="done-text">You've reviewed every rated anime on your list.</p>
+      <div class="row"><button class="btn-primary" id="btn-restart">Review again</button></div>
+    </div>
+  </div>
+
+  <footer class="helper">Uses the official AniList GraphQL API · not affiliated with AniList</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const API_URL = "https://graphql.anilist.co";
+  const CLIENT_ID = "50350";
+  const REDIRECT_URI = "https://orelashush123.github.io/anilist-app/";
+  const LS_TOKEN = "rewatch_token";
+  const LS_EXPIRES = "rewatch_token_expires";
+
+  // ---------- element refs ----------
+  const screens = {
+    login: document.getElementById("screen-login"),
+    confirm: document.getElementById("screen-confirm"),
+    loading: document.getElementById("screen-loading"),
+    empty: document.getElementById("screen-empty"),
+    review: document.getElementById("screen-review"),
+    done: document.getElementById("screen-done"),
+  };
+
+  function showScreen(name){
+    Object.values(screens).forEach(s => s.classList.add("hidden"));
+    screens[name].classList.remove("hidden");
+  }
+
+  function setLoading(text){
+    document.getElementById("loading-text").textContent = text || "Loading…";
+    showScreen("loading");
+  }
+
+  // ---------- state ----------
+  let state = {
+    token: null,
+    viewer: null,      // { id, name }
+    entries: [],        // flattened rated entries
+    index: 0,
+  };
+
+  // ---------- GraphQL helper ----------
+  async function gql(query, variables){
+    let res;
+    try{
+      res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer " + state.token,
+        },
+        body: JSON.stringify({ query, variables }),
+      });
+    }catch(networkErr){
+      throw new Error("Network error — check your connection and try again.");
+    }
+
+    if(res.status === 401){
+      throw new Error("__AUTH_EXPIRED__");
+    }
+    if(res.status === 429){
+      const retryAfter = res.headers.get("Retry-After");
+      throw new Error("AniList is rate-limiting requests. Please wait " + (retryAfter ? retryAfter + "s" : "a moment") + " and try again.");
+    }
+
+    let json;
+    try{ json = await res.json(); }
+    catch(e){ throw new Error("Unexpected response from AniList."); }
+
+    if(json.errors && json.errors.length){
+      const msg = json.errors.map(e => e.message).join("; ");
+      throw new Error(msg || "AniList returned an error.");
+    }
+    if(!res.ok){
+      throw new Error("AniList request failed (" + res.status + ").");
+    }
+    return json.data;
+  }
+
+  // ---------- login flow ----------
+  const btnOpenAuth = document.getElementById("btn-open-auth");
+  const loginBanner = document.getElementById("login-banner");
+
+  btnOpenAuth.addEventListener("click", function(){
+    const url = "https://anilist.co/api/v2/oauth/authorize"
+      + "?client_id=" + CLIENT_ID
+      + "&redirect_uri=" + encodeURIComponent(REDIRECT_URI)
+      + "&response_type=token";
+    window.location.href = url; // full-page redirect, comes straight back here
+  });
+
+  function showLoginBanner(type, msg){
+    loginBanner.className = "banner " + type;
+    loginBanner.textContent = msg;
+  }
+
+  // Verify a token against the API, persist it, and move to the confirm screen.
+  async function verifyAndProceed(token, expiresInSeconds){
+    state.token = token;
+    setLoading("Signing you in…");
+    try{
+      const data = await gql(`query { Viewer { id name mediaListOptions { scoreFormat } } }`);
+      state.viewer = data.Viewer;
+      localStorage.setItem(LS_TOKEN, token);
+      if(expiresInSeconds){
+        localStorage.setItem(LS_EXPIRES, String(Date.now() + Number(expiresInSeconds) * 1000));
+      }
+      document.getElementById("confirm-name").textContent = ", " + state.viewer.name;
+      showScreen("confirm");
+    }catch(err){
+      localStorage.removeItem(LS_TOKEN);
+      localStorage.removeItem(LS_EXPIRES);
+      const msg = err.message === "__AUTH_EXPIRED__"
+        ? "That session isn't valid or has expired. Please log in again."
+        : "Couldn't log in: " + err.message;
+      showLoginBanner("error", msg);
+      showScreen("login");
+    }
+  }
+
+  document.getElementById("btn-logout").addEventListener("click", function(){
+    localStorage.removeItem(LS_TOKEN);
+    localStorage.removeItem(LS_EXPIRES);
+    state = { token: null, viewer: null, entries: [], index: 0 };
+    showScreen("login");
+  });
+
+  // ---------- start / fetch list ----------
+  document.getElementById("btn-start").addEventListener("click", fetchList);
+  document.getElementById("btn-empty-back").addEventListener("click", function(){ showScreen("confirm"); });
+  document.getElementById("btn-restart").addEventListener("click", fetchList);
+
+  async function fetchList(){
+    setLoading("Fetching your anime list…");
+    try{
+      const data = await gql(`
+        query ($userId: Int) {
+          MediaListCollection(userId: $userId, type: ANIME) {
+            lists {
+              name
+              entries {
+                id
+                score
+                status
+                media {
+                  id
+                  title { english romaji }
+                  coverImage { large }
+                }
+              }
+            }
+          }
+        }
+      `, { userId: state.viewer.id });
+
+      const lists = (data.MediaListCollection && data.MediaListCollection.lists) || [];
+      let flat = [];
+      lists.forEach(l => (l.entries || []).forEach(e => flat.push(e)));
+
+      // keep only entries that actually have a score set
+      flat = flat.filter(e => typeof e.score === "number" && e.score > 0);
+
+      if(flat.length === 0){
+        showScreen("empty");
+        return;
+      }
+
+      state.entries = flat;
+      state.index = 0;
+      showScreen("review");
+      renderCurrentEntry();
+    }catch(err){
+      handleFetchError(err, fetchList);
+    }
+  }
+
+  function handleFetchError(err, retryFn){
+    if(err.message === "__AUTH_EXPIRED__"){
+      alert("Your session has expired. Please log in again.");
+      localStorage.removeItem(LS_TOKEN);
+      localStorage.removeItem(LS_EXPIRES);
+      showScreen("login");
+      return;
+    }
+    setLoading(err.message + " ");
+    const card = screens.loading.querySelector(".card");
+    if(!card.querySelector(".retry-btn")){
+      const btn = document.createElement("button");
+      btn.textContent = "Retry";
+      btn.className = "btn-primary retry-btn";
+      btn.style.marginTop = "16px";
+      btn.addEventListener("click", retryFn);
+      card.appendChild(btn);
+    }
+  }
+
+  // ---------- score format helpers ----------
+  function scoreFormatRules(){
+    const fmt = (state.viewer && state.viewer.mediaListOptions && state.viewer.mediaListOptions.scoreFormat) || "POINT_10";
+    switch(fmt){
+      case "POINT_100": return { min: 1, max: 100, step: 1, decimals: 0, label: "out of 100" };
+      case "POINT_10_DECIMAL": return { min: 0.5, max: 10, step: 0.1, decimals: 1, label: "out of 10" };
+      case "POINT_10": return { min: 1, max: 10, step: 1, decimals: 0, label: "out of 10" };
+      case "POINT_5": return { min: 1, max: 5, step: 1, decimals: 0, label: "out of 5 stars" };
+      case "POINT_3": return { min: 1, max: 3, step: 1, decimals: 0, label: "1 = 😞 2 = 😐 3 = 😊" };
+      default: return { min: 1, max: 10, step: 1, decimals: 0, label: "out of 10" };
+    }
+  }
+
+  function formatScore(n, rules){
+    return rules.decimals > 0 ? n.toFixed(rules.decimals) : String(n);
+  }
+
+  function validateScore(raw, rules){
+    if(raw.trim() === "") return { ok:false, error: "Enter a rating, or press Enter unchanged to skip." };
+    const n = Number(raw);
+    if(Number.isNaN(n)) return { ok:false, error: "That's not a number." };
+    if(n < rules.min || n > rules.max) return { ok:false, error: "Must be between " + rules.min + " and " + rules.max + "." };
+    if(rules.decimals === 0 && !Number.isInteger(n)) return { ok:false, error: "Whole numbers only for this rating scale." };
+    if(rules.decimals === 1){
+      const rounded = Math.round(n * 10) / 10;
+      if(Math.abs(rounded - n) > 1e-9) return { ok:false, error: "Only one decimal place allowed." };
+    }
+    return { ok:true, value: n };
+  }
+
+  // ---------- review screen ----------
+  const elProgressLabel = document.getElementById("progress-label");
+  const elProgressFill = document.getElementById("progress-fill");
+  const elCoverImg = document.getElementById("cover-img");
+  const elNoCover = document.getElementById("no-cover");
+  const elAnimeTitle = document.getElementById("anime-title");
+  const elAnimeSub = document.getElementById("anime-sub");
+  const elCurrentScoreNum = document.getElementById("current-score-num");
+  const elInputNewScore = document.getElementById("input-new-score");
+  const elFieldMsg = document.getElementById("field-msg");
+  const btnSave = document.getElementById("btn-save");
+  const btnSkip = document.getElementById("btn-skip");
+  const btnQuit = document.getElementById("btn-quit");
+
+  function currentEntry(){ return state.entries[state.index]; }
+
+  function renderCurrentEntry(){
+    const entry = currentEntry();
+    const rules = scoreFormatRules();
+    const total = state.entries.length;
+
+    elProgressLabel.textContent = (state.index + 1) + " of " + total;
+    elProgressFill.style.width = Math.round(((state.index) / total) * 100) + "%";
+
+    const title = entry.media.title.english || entry.media.title.romaji || "Untitled";
+    elAnimeTitle.textContent = title;
+    elAnimeSub.textContent = "Rating scale: " + rules.label;
+
+    const coverUrl = entry.media.coverImage && entry.media.coverImage.large;
+    if(coverUrl){
+      elCoverImg.src = coverUrl;
+      elCoverImg.alt = title;
+      elCoverImg.classList.remove("hidden");
+      elNoCover.classList.add("hidden");
+    }else{
+      elCoverImg.classList.add("hidden");
+      elNoCover.classList.remove("hidden");
+    }
+
+    elCurrentScoreNum.textContent = formatScore(entry.score, rules);
+
+    elInputNewScore.value = formatScore(entry.score, rules);
+    elInputNewScore.classList.remove("invalid", "success");
+    elFieldMsg.textContent = "";
+    elFieldMsg.className = "field-msg";
+    btnSave.disabled = false;
+    btnSave.innerHTML = "Save &amp; next ↵";
+
+    setTimeout(() => { elInputNewScore.focus(); elInputNewScore.select(); }, 30);
+  }
+
+  function advance(){
+    state.index += 1;
+    if(state.index >= state.entries.length){
+      elProgressFill.style.width = "100%";
+      document.getElementById("done-text").textContent =
+        "You've reviewed all " + state.entries.length + " rated anime on your list.";
+      showScreen("done");
+    }else{
+      renderCurrentEntry();
+    }
+  }
+
+  async function submitCurrent(){
+    const entry = currentEntry();
+    const rules = scoreFormatRules();
+    const raw = elInputNewScore.value;
+    const check = validateScore(raw, rules);
+
+    if(!check.ok){
+      elInputNewScore.classList.add("invalid");
+      elFieldMsg.textContent = check.error;
+      elFieldMsg.className = "field-msg error";
+      return;
+    }
+
+    // unchanged -> just move on, no API call
+    if(Math.abs(check.value - entry.score) < 1e-9){
+      advance();
+      return;
+    }
+
+    btnSave.disabled = true;
+    btnSave.innerHTML = '<span class="spinner"></span>Saving…';
+    elFieldMsg.textContent = "";
+    elFieldMsg.className = "field-msg";
+    elInputNewScore.classList.remove("invalid");
+
+    try{
+      await gql(`
+        mutation ($id: Int, $score: Float) {
+          SaveMediaListEntry(id: $id, score: $score) { id score }
+        }
+      `, { id: entry.id, score: check.value });
+
+      entry.score = check.value; // keep local state in sync
+      elInputNewScore.classList.add("success");
+      elFieldMsg.textContent = "Saved.";
+      elFieldMsg.className = "field-msg success";
+      setTimeout(advance, 350);
+    }catch(err){
+      if(err.message === "__AUTH_EXPIRED__"){
+        alert("Your session has expired. Please log in again.");
+        localStorage.removeItem(LS_TOKEN);
+        localStorage.removeItem(LS_EXPIRES);
+        showScreen("login");
+        return;
+      }
+      elInputNewScore.classList.add("invalid");
+      elFieldMsg.textContent = "Couldn't save: " + err.message + " — press Enter to retry.";
+      elFieldMsg.className = "field-msg error";
+      btnSave.disabled = false;
+      btnSave.innerHTML = "Retry &amp; next ↵";
+    }
+  }
+
+  btnSave.addEventListener("click", submitCurrent);
+  elInputNewScore.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      submitCurrent();
+    }
+  });
+  btnSkip.addEventListener("click", advance);
+  btnQuit.addEventListener("click", function(){
+    if(confirm("Stop reviewing? You can pick up again anytime — your progress on AniList is already saved.")){
+      showScreen("confirm");
+    }
+  });
+
+  // ---------- resume session on load ----------
+  (function init(){
+    // 1) Did AniList just redirect back with a token in the URL fragment?
+    if(window.location.hash && window.location.hash.indexOf("access_token") !== -1){
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      const token = params.get("access_token");
+      const error = params.get("error");
+      const expiresIn = params.get("expires_in");
+
+      // clean the token out of the address bar
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+
+      if(token){
+        verifyAndProceed(token, expiresIn);
+        return;
+      }
+      if(error){
+        showLoginBanner("error", "AniList login was cancelled or denied.");
+        showScreen("login");
+        return;
+      }
+    }
+
+    // 2) Otherwise, resume a previously saved session (if not expired).
+    const savedToken = localStorage.getItem(LS_TOKEN);
+    const savedExpires = localStorage.getItem(LS_EXPIRES);
+    if(savedToken && (!savedExpires || Date.now() < Number(savedExpires))){
+      verifyAndProceed(savedToken, null);
+    }else{
+      if(savedToken){ localStorage.removeItem(LS_TOKEN); localStorage.removeItem(LS_EXPIRES); }
+      showScreen("login");
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>
